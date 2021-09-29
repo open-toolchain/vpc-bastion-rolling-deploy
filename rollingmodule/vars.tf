@@ -53,3 +53,11 @@ variable "rolling_count" {
   description = "number of front end zones"
   default     = 1
 }
+
+variable "health_port" {
+  description = "Health Port of the VSI"
+}
+
+variable "app_port" {
+  description = "Port on which application is running."
+}
