@@ -19,6 +19,14 @@ provider "ibm" {
   #version    = "~> 1.30.2"
 }
 
+data "template_file" "instance_userdata" {
+  template = file("${path.module}/config.yaml")
+  vars = {
+    app_port = var.app_port
+    health_port = var.health_port
+  }
+}
+
 resource "ibm_is_instance" "rolling-server" {
   count   = var.rolling_count
   name    = "${var.unique_id}-rolling-vsi-${count.index + 1}"
@@ -35,7 +43,7 @@ resource "ibm_is_instance" "rolling-server" {
   resource_group = var.ibm_is_resource_group_id
   keys           = [var.ibm_is_ssh_key_id]
   tags           = ["schematics:group:rolling"]
-  user_data      = file("${path.module}/config.yaml")
+  user_data      = data.template_file.instance_userdata.rendered
 }
 
 
@@ -129,7 +137,7 @@ resource "ibm_is_lb" "vsi-rolling-lb" {
 
 resource "ibm_is_lb_listener" "vsi-rolling-lb-listener" {
   lb           = ibm_is_lb.vsi-rolling-lb.id
-  port         = "80"
+  port         = var.app_port
   protocol     = "http"
   default_pool = element(split("/", ibm_is_lb_pool.vsi-rolling-lb-pool.id), 1)
   depends_on   = [ibm_is_lb_pool.vsi-rolling-lb-pool]
@@ -152,7 +160,7 @@ resource "ibm_is_lb_pool_member" "vsi-rolling-lb-pool-member-zone1" {
   count          = var.rolling_count
   lb             = ibm_is_lb.vsi-rolling-lb.id
   pool           = element(split("/", ibm_is_lb_pool.vsi-rolling-lb-pool.id), 1)
-  port           = "8080"
+  port           = var.app_port
   target_address = ibm_is_instance.rolling-server[count.index].primary_network_interface[0].primary_ipv4_address
   depends_on     = [ibm_is_lb_pool.vsi-rolling-lb-pool]
 }
@@ -178,7 +186,8 @@ locals {
     ["outbound", "0.0.0.0/0", "tcp", 443, 443],
     ["outbound", "0.0.0.0/0", "tcp", 80, 80],
     ["outbound", "0.0.0.0/0", "udp", 53, 53],
-    ["inbound", "0.0.0.0/0", "tcp", 8080, 8080]
+    ["inbound", "0.0.0.0/0", "tcp", var.health_port, var.health_port],
+    ["inbound", "0.0.0.0/0", "tcp", var.app_port, var.app_port]
   ]
 
   sg_mappedrules = [

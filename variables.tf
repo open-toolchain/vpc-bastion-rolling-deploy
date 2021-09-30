@@ -73,7 +73,15 @@ variable "profile" {
   description = "Profile for VSIs deployed in rolling"
   default     = "cx2-2x4"
 }
+variable "health_port" {
+  description = "Health Port of the VSI"
+  default     = 8080
+}
 
+variable "app_port" {
+  description = "Port on which application is running."
+  default     = 8080
+}
 # image names can be determined with the cli command `ibmcloud is images`
 variable "image_name" {
   description = "OS image for VSI deployments. Only tested with Centos"

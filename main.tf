@@ -92,5 +92,7 @@ module "rolling" {
   pub_repo_egress_cidr     = local.pub_repo_egress_cidr
   app_rolling_sg_id        = module.rolling.security_group_id
   az_list                  = var.az_list
+  health_port               = var.health_port
+  app_port                  = var.app_port
 }
 

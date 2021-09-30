@@ -100,6 +100,8 @@ The following resources are deployed by this template and may incur charges.
 | bastion_cidr        | CIDR range for the subnet containing bastion VSI                  | string       |                | "172.22.192.0/20"    |   |
 | rolling_cidr        | CIDR range for the subnet containing application VSI's            | list(string) |                | "172.16.0.0/20"      |   |
 | vsi_profile         | Profile for VSIs deployed in blue and green                       | string       |                | "cx2-2x4"            |   |
+| health_port         | Port on which deployed application exposes health endpoint        | string       |                | "8080"               |   |
+| app_port            | Port on which deployed application exposes application endpoint   | string       |                | "8080"               |   |
 | image_name          | OS image for VSI deployments. Only tested with Centos             | string       |                | "ibm-centos-8-3-minimal-amd64-3" |  |
 | ssh_key_name        | Name given to public SSH key uploaded to IBM Cloud for VSI access | string       |  ✓             |                      |   |
 | ssh_private_key     | Optional private key from key pair. Only required if it desired to validate remote SSH access to the bastion host and VSIs. | string  | | |  ✓   |
