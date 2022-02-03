@@ -1,3 +1,4 @@
+#cloud-config
 # This is the boot time cofiguration to the VSI. Here we install the JAVA pacakge to run java app
 # tar and firewalld to run some commands.
 # firewall commands will be used to add the service and open the ports on the VSI.
